@@ -1,0 +1,249 @@
+aid: neso
+name: National Energy System Operator (NESO)
+review:
+  question: What real, public API surface does NESO expose, and what energy-data obligation
+    actually applies to it?
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  tier: system-operator
+  homeMarket: United Kingdom
+  primaryDomain: neso.energy
+  verdict: >
+    NESO is an open market-data publisher with no consumer-data surface. Two real,
+    live, anonymous APIs were confirmed by probe: the NESO Data Portal CKAN API and
+    the Carbon Intensity API for Great Britain. Neither publishes a downloadable
+    machine-readable contract, so no OpenAPI was harvested and none was authored.
+mandate:
+  regime: other
+  regimeName: Ofgem Data Best Practice Guidance, applied through NESO's electricity
+    system operator licence under the RIIO-2 framework (Energy Act 2023 / Electricity
+    Act 1989).
+  status: live-implemented
+  statusEvidence: >
+    The obligation and the implementation were checked as separate facts. The
+    obligation: Ofgem's Data Best Practice Guidance is a licence-condition
+    requirement on RIIO-price-controlled licensees, carrying a "presumed open"
+    principle for Energy System Data. The implementation: verified by direct
+    anonymous HTTP probe on 2026-07-27, not by reading a compliance page. A live
+    CKAN 2.8.7 instance at https://api.neso.energy answered 200 to
+    /api/3/action/status_show, /site_read, /package_list, /organization_list,
+    /package_search (count = 128 datasets), /package_show and
+    /datastore_search — all without a key, account, referrer or token. A facet
+    query on license_id returned {"ESO": 128}, i.e. every one of the 128 datasets
+    carries the NESO Open Data Licence. Separately,
+    https://api.carbonintensity.org.uk/intensity, /intensity/factors, /generation
+    and /regional each returned 200 with live half-hourly JSON. This is an
+    implementation, not a claim.
+  notMandated: >
+    There is NO consumer energy data-portability mandate in Great Britain
+    equivalent to the Australian Consumer Data Right (energy) or Ontario's Green
+    Button regulation. Britain mandated the INFRASTRUCTURE — the licensed Smart
+    DCC monopoly carries smart-meter traffic — not a consumer data right. NESO is
+    not the DCC, holds no retail customer relationships, and is therefore not a
+    designated consumer data holder under any regime. `smart-meter-infrastructure`
+    was considered and rejected as the regime for THIS organization because that
+    mandate binds the DCC and licensed suppliers, not the system operator.
+  cdrRegisterEntry: not applicable — no CDR or equivalent register exists for GB
+    energy, and no register entry was sought or found.
+dataStandard:
+  standard: no standard reference found
+  detail: >
+    No Green Button / ESPI, no CDR Consumer Data Standards, no IEC CIM 61968/61970,
+    no IEEE 2030.5, no OpenADR, no OCPP/OCPI reference was found on any NESO surface.
+    The Data Portal API is CKAN Action API 3 — a widely used open-data platform
+    convention, not an energy-sector data standard. The Carbon Intensity API is a
+    proprietary REST/JSON shape defined only by its own published reference. Data
+    licensing follows the NESO Open Data Licence v1.0, which is derived from Open
+    Government Licence v3.0 and stated to be compatible with CC BY 4.0.
+dataSplit:
+  marketDataOpen: true
+  marketDataDetail: >
+    Wide open. 128 datasets across 15+ data groups (ancillary-services, balancing,
+    carbon-intensity1, connection-registers, constraint-management, demand, dfs,
+    electricity-market-reform, future-energy-scenarios, generation, interconnectors,
+    network-charges, plans-reports-analysis, strategic-energy-planning, system) are
+    queryable anonymously, including full SQL over the datastore. Plus a live
+    national/regional carbon-intensity and generation-mix feed with 96h+ forecast.
+  consumerDataApi: false
+  consumerDataDetail: >
+    Zero. NESO exposes no individual customer usage, billing, consent, or
+    account-level data through any API, and no accredited-recipient or consent
+    flow exists. This is structurally correct rather than a gap: the system
+    operator has no retail customers. In GB, individual consumption data moves
+    through the Smart DCC and licensed suppliers, and the API-native retail surface
+    in this market is Octopus/Kraken, not NESO.
+  theFinding: >
+    NESO is the clean inverse of a typical retailer: completely open on market and
+    system data, completely absent on consumer data. The split is real and should
+    never be collapsed into a single "open/closed" verdict.
+accessGate:
+  gate: self-serve
+  whatADeveloperMustDo: >
+    Nothing. There is no sign-up, no developer portal login, no API key request, no
+    application form, and no data licence to sign before calling. A developer issues
+    an HTTPS GET against https://api.neso.energy/api/3/action/<action> or
+    https://api.carbonintensity.org.uk/<path> and gets JSON. Attribution is required
+    when redistributing Data Portal data ("Supported by National Energy SO Open
+    Data"). Self-imposed courtesy limits published by NESO: max 1 request/second to
+    the CKAN API, max 2 requests/minute to the datastore; NESO reserves the right to
+    throttle on service degradation.
+  gated: false
+authModel:
+  scheme: none
+  detail: >
+    Both APIs are unauthenticated anonymous HTTP GET. No API key, no OAuth2, no
+    OpenID Connect, no mTLS, no CDR-style accreditation. api.neso.energy/user/login
+    exists but is the CKAN admin/editor login for data publishers, not a consumer or
+    developer gate — the read API answers fully without it.
+  wellKnownProbe: >
+    https://www.neso.energy/.well-known/openid-configuration -> HTTP 404.
+    https://api.neso.energy/.well-known/openid-configuration -> HTTP 200 but returns
+    the CKAN HTML 404 page, not an OIDC discovery document.
+    https://api.carbonintensity.org.uk/.well-known/openid-configuration -> HTTP 400
+    JSON error ("Please enter a valid path e.g. /intensity/"). No OIDC anywhere.
+probes:
+  date: '2026-07-27'
+  method: anonymous curl, no cookies, no credentials
+  results:
+  - url: https://www.neso.energy/
+    status: 200
+    note: Corporate site (Drupal).
+  - url: https://www.neso.energy/data-portal
+    status: 200
+    note: Data Portal landing page; links API guidance and the NESO Open Licence.
+  - url: https://www.neso.energy/data-portal/api-guidance
+    status: 200
+    note: Names base URL https://api.neso.energy/api/3/action/ and the supported
+      CKAN actions plus the 1/sec and 2/min rate guidance.
+  - url: https://www.neso.energy/data-portal/neso-open-licence
+    status: 200
+    note: National Energy SO Open Data Licence v1.0, royalty-free, perpetual,
+      commercial use allowed, attribution required.
+  - url: https://api.neso.energy/
+    status: 200
+    note: Redirects to /user/login?came_from=%2F — CKAN publisher login, not a
+      developer gate.
+  - url: https://api.neso.energy/api/3/action/status_show
+    status: 200
+    note: 'ckan_version 2.8.7; extensions include datastore, s3filestore, showcase.'
+  - url: https://api.neso.energy/api/3/action/package_list
+    status: 200
+    note: Full dataset list returned anonymously.
+  - url: https://api.neso.energy/api/3/action/package_search?rows=1
+    status: 200
+    note: count = 128 datasets.
+  - url: https://api.neso.energy/api/3/action/package_search?rows=0&facet.field=["license_id"]
+    status: 200
+    note: 'license_id facet: {"ESO": 128} — NESO Open Data Licence on every dataset.'
+  - url: https://api.neso.energy/api/3/action/organization_list
+    status: 200
+    note: 15+ data groups including balancing, demand, dfs, interconnectors,
+      connection-registers, future-energy-scenarios.
+  - url: https://api.neso.energy/api/3/action/package_show?id=historic-demand-data
+    status: 200
+    note: Author "National Energy System Operator"; resources with field-level
+      metadata.
+  - url: https://api.neso.energy/api/3/action/datastore_search?resource_id=bb44a1b5-75b1-4db2-8491-257f23385006&limit=1
+    status: 200
+    note: Tabular datastore rows returned anonymously with typed field schema.
+  - url: https://api.carbonintensity.org.uk/intensity
+    status: 200
+    note: Live half-hourly national forecast/actual/index JSON.
+  - url: https://api.carbonintensity.org.uk/intensity/factors
+    status: 200
+    note: Per-fuel gCO2/kWh emission factors.
+  - url: https://api.carbonintensity.org.uk/generation
+    status: 200
+    note: Half-hourly GB generation mix by fuel.
+  - url: https://api.carbonintensity.org.uk/regional
+    status: 200
+    note: Per-DNO-region intensity and generation mix.
+  - url: https://carbon-intensity.github.io/api-definitions/
+    status: 200
+    note: Slate single-page API reference; 39 distinct documented path templates
+      extracted. Zero occurrences of the word "swagger" in the page.
+  - url: https://carbonintensity.org.uk/
+    status: 200
+    note: Public landing page for the API.
+  - url: https://api.carbonintensity.org.uk/
+    status: 200
+    note: HTML index of the API.
+  - url: https://www.neso.energy/rss.xml
+    status: 200
+    note: Site-wide RSS feed, valid XML.
+  - url: https://www.neso.energy/news
+    status: 200
+  - url: https://www.linkedin.com/company/neso-energy
+    status: 200
+  - url: https://www.neso.energy/api
+    status: 404
+  - url: https://www.neso.energy/developers
+    status: 404
+  - url: https://www.neso.energy/developer
+    status: 404
+  - url: https://www.neso.energy/docs
+    status: 404
+  - url: https://data.neso.energy/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://developer.neso.energy/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://docs.neso.energy/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://api.neso.energy/openapi.json
+    status: 200
+    note: Returns the CKAN HTML 404 page, not JSON. NOT a spec.
+  - url: https://api.neso.energy/swagger.json
+    status: 200
+    note: Returns the CKAN HTML 404 page, not JSON. NOT a spec.
+  - url: https://api.carbonintensity.org.uk/swagger.json
+    status: 200
+    note: 'Returns a JSON error body: 400 Bad Request, "Please enter a valid path
+      e.g. /intensity/". NOT a spec.'
+  - url: https://api.carbonintensity.org.uk/openapi.json
+    status: 200
+    note: Same JSON error body. NOT a spec.
+  - url: https://carbon-intensity.github.io/api-definitions/swagger.json
+    status: 404
+  - url: https://carbon-intensity.github.io/api-definitions/swagger.yaml
+    status: 404
+  - url: https://carbon-intensity.github.io/api-definitions/openapi.json
+    status: 404
+specHarvest:
+  harvested: false
+  specsCount: 0
+  detail: >
+    No machine-readable API contract is published by NESO. The
+    carbon-intensity/api-definitions repository (default branch master, 23 tree
+    entries, checked via the GitHub API) contains only .github/, CNAME, README.md
+    and a docs/ Jekyll-Slate site — no swagger, no openapi, no yaml/json spec of
+    any kind. The Data Portal exposes the CKAN Action API, which is documented in
+    prose on neso.energy rather than as OpenAPI. The GitHub org `neso-energy`
+    exists but has 0 public repositories. No spec was authored, because authoring
+    one here would be fabrication rather than harvest.
+  openapiDirectoryOmitted: true
+sources:
+- url: https://www.neso.energy/data-portal/api-guidance
+  type: Documentation
+  note: Canonical API base URL, supported CKAN actions, rate guidance, PostgreSQL
+    SQL notes.
+- url: https://www.neso.energy/data-portal/neso-open-licence
+  type: Licensing
+  note: National Energy SO Open Data Licence v1.0; OGL v3.0 derived, CC BY 4.0
+    compatible.
+- url: https://carbon-intensity.github.io/api-definitions/
+  type: APIReference
+  note: Official Carbon Intensity API reference for Great Britain.
+- url: https://github.com/carbon-intensity/api-definitions
+  type: SourceCode
+  note: 'GitHub description reads: "This is the Official Carbon Intensity API for
+    Great Britain, developed by NESO."'
+- url: https://www.ofgem.gov.uk/sites/default/files/2021-11/Data_Best_Practice_Guidance_v1.pdf
+  type: Regulation
+  note: Ofgem Data Best Practice Guidance — the licence-condition obligation behind
+    NESO's presumed-open data posture.
+- url: https://www.neso.energy/news/national-energy-system-operator-launches-today
+  type: News
+  note: NESO launch, 1 October 2024.
