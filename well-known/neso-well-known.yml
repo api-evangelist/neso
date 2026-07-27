@@ -1,0 +1,63 @@
+generated: '2026-07-27'
+method: searched
+description: >-
+  Results of probing the /.well-known/ discovery surface for every host that
+  appears in apis.yml (Website, Portal, humanURL, baseURL). NESO publishes no
+  OpenAPI, so there are no additional servers[] hosts to probe. Status is the
+  HTTP code observed at fetch time on 2026-07-27. Only a document that returned
+  a real, correctly-typed payload was saved verbatim: api.neso.energy runs CKAN
+  2.8.7, which answers 200 with its HTML 404 page for every unknown path, so
+  those are recorded as present-but-not-a-real-document and NOT saved.
+  api.carbonintensity.org.uk is AWS API Gateway and answers 400 with a JSON
+  error body for any unrecognised path.
+hosts:
+  - host: https://www.neso.energy
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        type: text/plain
+        file: neso-security.txt
+        note: RFC 9116; real document. Contact via HackerOne, Policy at /responsible-disclosure.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+  - host: https://api.neso.energy
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        real_document: false
+        note: CKAN HTML 404 page returned with a 200 status. Not a security.txt.
+      - path: /.well-known/api-catalog
+        status: 200
+        real_document: false
+        note: CKAN HTML 404 page returned with a 200 status. Not an API catalog.
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        real_document: false
+        note: CKAN HTML 404 page returned with a 200 status. Not RFC 8414 metadata.
+      - path: /.well-known/openid-configuration
+        status: 200
+        real_document: false
+        note: CKAN HTML 404 page returned with a 200 status. No OIDC anywhere.
+  - host: https://api.carbonintensity.org.uk
+    documents:
+      - path: /.well-known/security.txt
+        status: 400
+        note: >-
+          API Gateway JSON error body - "Please enter a valid path e.g.
+          /intensity/". No well-known surface.
+      - path: /.well-known/openid-configuration
+        status: 400
+  - host: https://carbonintensity.org.uk
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+findings:
+  security_txt: https://www.neso.energy/.well-known/security.txt
+  openid_configuration: none
+  oauth_authorization_server: none
+  api_catalog: none
+  ai_plugin: none

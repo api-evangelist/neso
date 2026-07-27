@@ -1,0 +1,72 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: National Energy System Operator (NESO)
+providerId: neso
+generated: '2026-07-27'
+method: searched
+created: '2026-07-27'
+modified: '2026-07-27'
+tags:
+  - Rate Limiting
+  - Open Data
+  - Energy
+description: >-
+  NESO publishes courtesy rate guidance in prose on the Data Portal API guidance
+  page rather than enforcing a signalled quota. There are no RateLimit-* headers
+  and no 429 responses were observed; the stated enforcement mechanism is IP
+  blocking when a consumer degrades the service. The Carbon Intensity API
+  publishes no rate limit at all.
+sources:
+  - https://www.neso.energy/data-portal/api-guidance
+  - https://carbon-intensity.github.io/api-definitions/
+headers:
+  rateLimit: none
+  requestId: x-amzn-requestid (Carbon Intensity API only)
+responseCodes:
+  throttled: none observed
+enforcement:
+  style: advisory
+  mechanism: >-
+    "If the data consumer is not following the best practise for using the API
+    and therefore overloading the server which causes performance issues then we
+    reserve the right to block that IP address."
+  signalled_in_response: false
+limits:
+  - name: CKAN Action API requests
+    api: NESO Data Portal API
+    scope: consumer (IP)
+    metric: requests_per_second
+    limit: 1
+    timeFrame: second
+    binding: recommended
+    source: https://www.neso.energy/data-portal/api-guidance
+  - name: Datastore API requests
+    api: NESO Data Portal API
+    scope: consumer (IP)
+    metric: requests_per_minute
+    limit: 2
+    timeFrame: minute
+    binding: recommended
+    note: >-
+      Applies to datastore_search and datastore_search_sql, which query the
+      PostgreSQL datastore and are resource-intensive over large datasets.
+    source: https://www.neso.energy/data-portal/api-guidance
+  - name: Carbon Intensity API
+    api: Carbon Intensity API
+    scope: consumer (IP)
+    metric: unpublished
+    limit: null
+    timeFrame: null
+    binding: none-published
+    note: No rate limit is documented in the Carbon Intensity API reference.
+efficiency_guidance:
+  - Do not poll data files to detect change; call resource_show?id={resource_id} and compare the modification date.
+  - Use datastore_search filters or datastore_search_sql to retrieve only the records needed rather than downloading whole resources.
+plans:
+  applicable: false
+  detail: >-
+    There are no tiers, no paid plans and no quota upgrades. All access is free,
+    anonymous and open under the NESO Open Data Licence.
+related:
+  conventions: conventions/neso-conventions.yml

@@ -32,7 +32,7 @@ accessModel:
   - probe
   generated: '2026-07-27'
   method: observed
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+image: https://www.neso.energy/themes/custom/neso_theme/logo.svg
 tags:
 - Energy
 - United Kingdom
@@ -68,11 +68,21 @@ apis:
   - CKAN
   properties:
   - type: Documentation
-    url: https://www.neso.energy/data-portal/api-guidance
-  - type: Documentation
     url: https://www.neso.energy/data-portal
+  - type: APIReference
+    url: https://www.neso.energy/data-portal/api-guidance
   - type: Licensing
     url: https://www.neso.energy/data-portal/neso-open-licence
+  - type: RateLimits
+    url: rate-limits/neso-rate-limits.yml
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
 - aid: neso:neso-carbon-intensity-api
   name: Carbon Intensity API
   description: The official Carbon Intensity API for Great Britain, developed by NESO, giving
@@ -98,15 +108,67 @@ apis:
     url: https://github.com/carbon-intensity
   - type: SourceCode
     url: https://github.com/carbon-intensity/api-definitions
+  - type: TermsOfService
+    url: https://github.com/carbon-intensity/terms
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
 common:
+- type: VulnerabilityDisclosure
+  url: security/neso-vulnerability-disclosure.yml
+- type: Security
+  url: https://www.neso.energy/responsible-disclosure
+- type: SecurityTxt
+  url: well-known/neso-security.txt
+- type: DomainSecurity
+  url: security/neso-domain-security.yml
+- type: WellKnown
+  url: well-known/neso-well-known.yml
+- type: Authentication
+  url: authentication/neso-authentication.yml
+- type: Conventions
+  url: conventions/neso-conventions.yml
+- type: RateLimits
+  url: rate-limits/neso-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/neso-error-codes.yml
+- type: Lifecycle
+  url: lifecycle/neso-lifecycle.yml
+- type: Conformance
+  url: conformance/neso-conformance.yml
+- type: DataModel
+  url: data-model/neso-data-model.yml
+- type: Packages
+  url: packages/neso-packages.yml
+- type: MCPServer
+  url: mcp/neso-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/neso-llms.txt
 - type: Website
   url: https://www.neso.energy/
 - type: Documentation
   url: https://www.neso.energy/data-portal/api-guidance
 - type: Portal
   url: https://www.neso.energy/data-portal
+- type: APIReference
+  url: https://carbon-intensity.github.io/api-definitions/
 - type: Licensing
   url: https://www.neso.energy/data-portal/neso-open-licence
+- type: TermsOfService
+  url: https://www.neso.energy/terms-and-conditions
+- type: PrivacyPolicy
+  url: https://www.neso.energy/privacy-policy
+- type: Support
+  url: https://www.neso.energy/contact-us
+- type: GitHubOrganization
+  url: https://github.com/carbon-intensity
 - type: LinkedIn
   url: https://www.linkedin.com/company/neso-energy
 - type: BlogRSS

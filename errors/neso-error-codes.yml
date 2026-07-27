@@ -1,0 +1,111 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Live anonymous error probes of both APIs on 2026-07-27, plus the CKAN 2.8.7
+  Action API error contract exposed by the running instance. NESO publishes no
+  OpenAPI and no error reference page, so every entry below is a response body
+  observed verbatim from the live service, not a documented catalogue.
+format: vendor-json
+rfc9457: false
+description: >-
+  Neither NESO surface uses RFC 9457 problem+json. The Data Portal returns the
+  standard CKAN envelope with a success flag and a typed error object; the
+  Carbon Intensity API returns an AWS API Gateway style JSON error object with a
+  human-readable message that names the correct path form. Both are
+  content-type application/json.
+
+envelopes:
+  - surface: NESO Data Portal API
+    content_type: application/json;charset=utf-8
+    shape: |
+      {
+        "help": "https://api.neso.energy/api/3/action/help_show?name=<action>",
+        "success": false,
+        "error": {"message": "...", "__type": "..."}
+      }
+    discriminator: error.__type
+    note: >-
+      Successful responses carry the same envelope with success:true and a
+      result object. An unknown action name is rejected before the envelope is
+      built and returns a bare JSON string instead.
+  - surface: Carbon Intensity API
+    content_type: application/json
+    shape: |
+      {"error": {"code": "400 Bad Request", "message": "..."}}
+    discriminator: error.code
+
+errors:
+  - surface: NESO Data Portal API
+    status: 404
+    type: Not Found Error
+    title: Not found
+    body: '{"help": "...help_show?name=package_show", "success": false, "error": {"message": "Not found", "__type": "Not Found Error"}}'
+    cause: The named dataset, resource, organization or tag does not exist on the Data Portal.
+    remediation: >-
+      Resolve the identifier first - package_list or package_search for datasets,
+      organization_list for data groups. CKAN accepts either the slug name or
+      the UUID id.
+    observed_on: 'https://api.neso.energy/api/3/action/package_show?id=does-not-exist-xyz'
+    verified: '2026-07-27'
+  - surface: NESO Data Portal API
+    status: 400
+    type: Action name not known
+    title: Bad request
+    body: '"Bad request - Action name not known: <action>"'
+    cause: The path segment after /api/3/action/ is not a CKAN action registered on this instance.
+    remediation: >-
+      Use one of the supported actions listed on the API guidance page:
+      organization_list, package_list, tag_list, package_search,
+      resource_search, resource_show, package_show, datastore_search,
+      datastore_search_sql.
+    note: Returned as a bare JSON string, NOT inside the success/error envelope.
+    observed_on: 'https://api.neso.energy/api/3/action/nonexistent_action'
+    verified: '2026-07-27'
+  - surface: NESO Data Portal API
+    status: 409
+    type: Validation Error
+    title: Validation error
+    cause: >-
+      A required parameter is missing or malformed - e.g. datastore_search
+      without resource_id, or a malformed filters/sql value. CKAN 2.8 returns
+      Validation Error inside the envelope with a per-field message map.
+    remediation: Supply the required parameter; check the field id and resource id quoting rules for SQL.
+    confidence: medium
+    note: >-
+      CKAN's documented validation behaviour for these actions; the exact body
+      varies by action and was not exhaustively probed.
+  - surface: Carbon Intensity API
+    status: 400
+    code: 400 Bad Request
+    title: Invalid path
+    body: '{"error": {"code": "400 Bad Request", "message": "Please enter a valid path e.g. /intensity/"}}'
+    cause: The requested path is not one of the documented Carbon Intensity resources.
+    remediation: Use a documented path from https://carbon-intensity.github.io/api-definitions/
+    note: >-
+      This is also what /openapi.json, /swagger.json and /.well-known/* return -
+      the reason no spec was harvested from this host.
+    observed_on: 'https://api.carbonintensity.org.uk/openapi.json'
+    verified: '2026-07-27'
+  - surface: Carbon Intensity API
+    status: 400
+    code: 400 Bad Request
+    title: Invalid date format
+    body: '{"error": {"code": "400 Bad Request", "message": "Please enter a valid date in ISO8601 format ''YYYY-MM-DD'' i.e. .../intensity/date/2017-08-25"}}'
+    cause: The {date} path segment is not ISO 8601 YYYY-MM-DD.
+    remediation: Format dates as YYYY-MM-DD; {from}/{to} take YYYY-MM-DDThh:mmZ.
+    observed_on: 'https://api.carbonintensity.org.uk/intensity/date/9999-99-99'
+    verified: '2026-07-27'
+
+not_present:
+  - status: 401
+    reason: No authentication exists on either read surface, so no 401 is reachable anonymously.
+  - status: 403
+    reason: No authorisation model on the read surface.
+  - status: 429
+    reason: >-
+      Rate guidance is advisory and enforced out-of-band by IP blocking; no 429
+      was observed. See rate-limits/neso-rate-limits.yml.
+
+related:
+  conventions: conventions/neso-conventions.yml
+  rate_limits: rate-limits/neso-rate-limits.yml

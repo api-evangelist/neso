@@ -1,0 +1,62 @@
+generated: '2026-07-27'
+method: generated
+source: >-
+  Generated from https://www.neso.energy/data-portal/api-guidance and
+  https://carbon-intensity.github.io/api-definitions/, with every operation
+  verified by anonymous live probe on 2026-07-27. NESO publishes no OpenAPI and
+  no AGENTS.md or skill files, so each skill is grounded in real HTTP method +
+  path rather than in an operationId.
+description: >-
+  Packaged operating instructions for the four marquee flows across NESO's two
+  public APIs. Every skill carries the same non-negotiables: no credentials,
+  respect the published rate guidance, read-only, attribute the open licence.
+skills:
+  - file: neso-find-and-query-a-dataset.md
+    name: Find and query a NESO Data Portal dataset
+    api: NESO Data Portal API
+    base_url: https://api.neso.energy/api/3/action
+    operations:
+      - GET /api/3/action/organization_list
+      - GET /api/3/action/package_search
+      - GET /api/3/action/package_show
+      - GET /api/3/action/resource_show
+      - GET /api/3/action/datastore_search
+  - file: neso-datastore-sql-analytics.md
+    name: Run SQL analytics against a NESO data file
+    api: NESO Data Portal API
+    base_url: https://api.neso.energy/api/3/action
+    operations:
+      - GET /api/3/action/package_show
+      - GET /api/3/action/datastore_search
+      - GET /api/3/action/datastore_search_sql
+  - file: neso-carbon-intensity-forecast.md
+    name: Read and forecast GB carbon intensity
+    api: Carbon Intensity API
+    base_url: https://api.carbonintensity.org.uk
+    operations:
+      - GET /intensity
+      - GET /intensity/{from}/fw48h
+      - GET /intensity/{from}/{to}
+      - GET /intensity/date/{date}
+      - GET /intensity/stats/{from}/{to}
+      - GET /intensity/factors
+      - GET /generation
+  - file: neso-regional-carbon-by-location.md
+    name: Get regional GB carbon intensity by postcode or DNO region
+    api: Carbon Intensity API
+    base_url: https://api.carbonintensity.org.uk
+    operations:
+      - GET /regional
+      - GET /regional/postcode/{postcode}
+      - GET /regional/regionid/{regionid}
+      - GET /regional/intensity/{from}/fw48h/postcode/{postcode}
+constraints:
+  authentication: none - do not send credentials
+  rate: 1 request/second (CKAN API), 2 requests/minute (Datastore API), unpublished for Carbon Intensity
+  writes: none - both APIs are read-only
+  attribution: 'Supported by National Energy SO Open Data'
+related:
+  conventions: conventions/neso-conventions.yml
+  errors: errors/neso-error-codes.yml
+  rate_limits: rate-limits/neso-rate-limits.yml
+  authentication: authentication/neso-authentication.yml

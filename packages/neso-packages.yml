@@ -1,0 +1,92 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  npm registry search, PyPI, and the GitHub organisations github.com/neso-energy
+  (0 public repositories) and github.com/carbon-intensity, probed 2026-07-27.
+description: >-
+  NESO publishes NO first-party client library on any package registry. The
+  neso-energy GitHub organisation exists but is empty; the carbon-intensity
+  organisation - whose api-definitions repository is described by NESO as "the
+  Official Carbon Intensity API for Great Britain, developed by NESO" - carries
+  documentation, methodology, terms and two demo applications, but no SDK. Every
+  package listed below is third-party and is recorded as official:false. No SDKs
+  pointer is wired in apis.yml because no first-party SDK exists.
+
+first_party_sdk: false
+package_count_official: 0
+
+packages:
+  - language: python
+    registry: pypi
+    name: carbonintensity
+    version_seen: 0.3.0
+    url: https://pypi.org/project/carbonintensity/
+    install: pip install carbonintensity
+    repository: https://github.com/jscruz/carbonintensity
+    covers: Carbon Intensity API
+    official: false
+    note: >-
+      Home Assistant client library for the Carbon Intensity API, by Jorge Cruz
+      Lambert. Community-maintained, not endorsed by NESO.
+  - language: python
+    registry: pypi
+    name: ckanapi
+    url: https://pypi.org/project/ckanapi/
+    install: pip install ckanapi
+    covers: NESO Data Portal API
+    official: false
+    note: >-
+      Generic CKAN Action API client and CLI maintained by the CKAN community.
+      It works against api.neso.energy because the Data Portal is stock CKAN
+      2.8.7, but it is a platform client, not a NESO client.
+  - language: javascript
+    registry: npm
+    name: '@pipeworx/mcp-carbon'
+    version_seen: 0.1.0
+    url: https://www.npmjs.com/package/@pipeworx/mcp-carbon
+    install: npm install @pipeworx/mcp-carbon
+    repository: https://github.com/pipeworx-io/mcp-carbon
+    covers: Carbon Intensity API
+    kind: mcp-server
+    official: false
+    note: >-
+      Third-party MCP server wrapping the Carbon Intensity API. Recorded here
+      and in mcp/neso-mcp.yml; it is not a NESO product.
+
+first_party_repositories:
+  - name: api-definitions
+    url: https://github.com/carbon-intensity/api-definitions
+    kind: documentation
+    official: true
+    note: The published Slate reference site for the Carbon Intensity API. Not a library.
+  - name: methodology
+    url: https://github.com/carbon-intensity/methodology
+    kind: documentation
+    official: true
+    note: Published methodology for the Carbon Intensity forecast.
+  - name: terms
+    url: https://github.com/carbon-intensity/terms
+    kind: documentation
+    official: true
+    note: Terms of use for the Carbon Intensity API.
+  - name: GridForecast
+    url: https://github.com/carbon-intensity/GridForecast
+    kind: example-application
+    language: javascript
+    official: true
+    note: React Native example mobile app for the Carbon Intensity API. Demo, not an SDK.
+  - name: carbon-forecast-gizmo
+    url: https://github.com/carbon-intensity/carbon-forecast-gizmo
+    kind: example-application
+    language: javascript
+    official: true
+    note: Demo showing the next 24 hours of forecast carbon in the UK power grid.
+
+registries_probed:
+  - {registry: npm, result: no first-party package}
+  - {registry: pypi, result: no first-party package}
+  - {registry: maven-central, result: not searched - no JVM surface indicated}
+  - {registry: nuget, result: not searched - no .NET surface indicated}
+  - {registry: rubygems, result: not searched - no Ruby surface indicated}
+  - {registry: crates.io, result: not searched - no Rust surface indicated}
+  - {registry: packagist, result: not searched - no PHP surface indicated}

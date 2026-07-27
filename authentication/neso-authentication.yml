@@ -1,0 +1,62 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://www.neso.energy/data-portal/api-guidance and live anonymous HTTP
+  probes of both APIs on 2026-07-27. NESO publishes no OpenAPI, so there are no
+  securitySchemes to derive from; this profile is the documented and
+  probe-verified auth model.
+docs: https://www.neso.energy/data-portal/api-guidance
+description: >-
+  Both NESO API surfaces are fully anonymous. There is no API key, no OAuth 2.0,
+  no OpenID Connect, no mutual TLS, and no accreditation regime of any kind. A
+  developer issues an ordinary HTTPS GET and receives JSON. This is a deliberate
+  posture: NESO's data is Energy System Data published under an open licence in
+  line with Ofgem's Data Best Practice Guidance, and there is no consumer data
+  surface that would require a consent or authorisation flow.
+summary:
+  types: [none]
+  api_key_in: []
+  oauth2_flows: []
+  anonymous: true
+  registration_required: false
+  accreditation_required: false
+schemes: []
+apis:
+  - api: NESO Data Portal API
+    base_url: https://api.neso.energy/api/3/action
+    scheme: none
+    detail: >-
+      CKAN 2.8.7 Action API. package_list, package_search, package_show,
+      organization_list, tag_list, resource_search, resource_show,
+      datastore_search and datastore_search_sql all answer HTTP 200 anonymously
+      with no key, cookie, account, referrer or token. A ckan session cookie is
+      set on the response but is not required on the request.
+    admin_login:
+      url: https://api.neso.energy/user/login
+      note: >-
+        CKAN publisher/editor login for NESO data stewards. It is NOT a
+        developer gate - the entire read API answers without it.
+    verified: 2026-07-27
+  - api: Carbon Intensity API
+    base_url: https://api.carbonintensity.org.uk
+    scheme: none
+    detail: >-
+      AWS API Gateway + CloudFront fronted REST/JSON. Every documented GET path
+      answers 200 anonymously. No key header, no query-string token, no
+      registration.
+    verified: 2026-07-27
+consumer_consent:
+  applicable: false
+  detail: >-
+    NESO holds no retail customer relationships and exposes no individual
+    consumption, billing, or account data, so there is no consent, authorisation
+    or accredited-recipient flow to document. GB smart-meter consumption data
+    moves through the licensed Smart DCC, not through the system operator.
+attribution:
+  required: true
+  form: 'Supported by National Energy SO Open Data'
+  licence: https://www.neso.energy/data-portal/neso-open-licence
+related:
+  conventions: conventions/neso-conventions.yml
+  rate_limits: rate-limits/neso-rate-limits.yml
+  well_known: well-known/neso-well-known.yml

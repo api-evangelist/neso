@@ -80,3 +80,25 @@ The official Carbon Intensity API for Great Britain, developed by NESO, giving n
 ## Maintainers
 
 - Kin Lane — kin@apievangelist.com
+
+## Artifacts
+
+Enrichment round 2026-07-27. NESO publishes no OpenAPI, Swagger, GraphQL, AsyncAPI or gRPC
+contract on any host — re-probed across `api.neso.energy`, `api.carbonintensity.org.uk` and
+`carbon-intensity.github.io` — so no spec was harvested and none was authored. Everything below is
+either a document fetched from NESO, a live-probe result, or an honest derivation.
+
+- [`authentication/neso-authentication.yml`](authentication/neso-authentication.yml) — both APIs fully anonymous: no key, OAuth, OIDC or mTLS.
+- [`conventions/neso-conventions.yml`](conventions/neso-conventions.yml) — pagination, Solr/SQL filtering, error envelopes, CORS, tracing, change detection. Idempotency is recorded as *absent* (both surfaces are read-only).
+- [`rate-limits/neso-rate-limits.yml`](rate-limits/neso-rate-limits.yml) — 1 req/sec CKAN API, 2 req/min Datastore API; advisory, enforced by IP blocking, not signalled in headers.
+- [`errors/neso-error-codes.yml`](errors/neso-error-codes.yml) — error bodies observed verbatim from live probes. Not RFC 9457.
+- [`lifecycle/neso-lifecycle.yml`](lifecycle/neso-lifecycle.yml) — CKAN Action API 3; Carbon Intensity unversioned and part-beta. No status page, SLA or deprecation policy exists.
+- [`conformance/neso-conformance.yml`](conformance/neso-conformance.yml) — CKAN, ISO 8601, CORS, RFC 9116, OGL v3.0, Ofgem Data Best Practice. No IEC CIM, IEEE 2030.5, Green Button, OpenADR or CDR.
+- [`data-model/neso-data-model.yml`](data-model/neso-data-model.yml) — Organization/Package/Resource/DatastoreRecord and IntensityPeriod/Region/GenerationMix.
+- [`well-known/neso-well-known.yml`](well-known/neso-well-known.yml) + [`well-known/neso-security.txt`](well-known/neso-security.txt) — a real RFC 9116 security.txt on the corporate host.
+- [`security/neso-vulnerability-disclosure.yml`](security/neso-vulnerability-disclosure.yml) — published VDP via HackerOne; 5-working-day response, no monetary rewards.
+- [`security/neso-domain-security.yml`](security/neso-domain-security.yml) — TLS 1.3 everywhere; DNSSEC + SPF + DMARC reject on `neso.energy`, none of the three on `carbonintensity.org.uk`.
+- [`packages/neso-packages.yml`](packages/neso-packages.yml) — no first-party SDK on any registry; three third-party libraries recorded.
+- [`mcp/neso-mcp.yml`](mcp/neso-mcp.yml) — 17 candidate tools over the two APIs. NESO operates no MCP server.
+- [`skills/_index.yml`](skills/_index.yml) — four agent skills grounded in probe-verified HTTP operations.
+- [`llms/neso-llms.txt`](llms/neso-llms.txt) — generated; NESO publishes no `llms.txt`.

@@ -1,0 +1,89 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://www.neso.energy/data-portal/api-guidance,
+  https://carbon-intensity.github.io/api-definitions/,
+  https://api.neso.energy/api/3/action/status_show, and live probes on
+  2026-07-27.
+description: >-
+  NESO's API lifecycle posture is thin and honest to record as such. There is a
+  versioned platform API (CKAN Action API 3) and an unversioned bespoke API
+  (Carbon Intensity). Neither publishes a deprecation policy, a Sunset/
+  Deprecation header contract, an SLA, or a status page. Absence here is
+  recorded data, not an unchecked field.
+
+versioning:
+  - api: NESO Data Portal API
+    scheme: uri-path
+    current: '3'
+    platform: CKAN 2.8.7
+    platform_source: https://api.neso.energy/api/3/action/status_show
+    extensions_enabled: [datastore, s3filestore, showcase]
+    detail: >-
+      The version is the CKAN Action API version pinned in the path
+      (/api/3/action/). NESO does not publish its own API version independent of
+      the CKAN platform version.
+  - api: Carbon Intensity API
+    scheme: none
+    current: null
+    detail: >-
+      Unversioned paths, no version header. The published reference marks the
+      Generation Mix and Regional sections "beta" - the only stability signal
+      NESO gives on this API.
+    beta_sections:
+      - Generation Mix
+      - Carbon Intensity - Regional
+
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  detail: >-
+    No deprecation or sunset policy is published on either surface and no
+    RFC 8594 Sunset or Deprecation header was observed. Dataset-level
+    retirement on the Data Portal is expressed through CKAN dataset state
+    (state: active) and metadata_modified, not through an API deprecation
+    contract.
+  dataset_state_field: result.state (CKAN)
+
+sla:
+  url: null
+  uptime_target: null
+  detail: >-
+    No SLA or uptime commitment is published for either API. Both are free open
+    data services. NESO reserves the right to block IP addresses that degrade
+    the service (see rate-limits/neso-rate-limits.yml).
+
+status_page:
+  url: null
+  found: false
+  probed:
+    - {url: 'https://status.neso.energy/', status: 0, note: DNS does not resolve}
+    - {url: 'https://www.neso.energy/status', status: 404}
+  detail: >-
+    No status page, uptime dashboard, or incident feed was found for either
+    api.neso.energy or api.carbonintensity.org.uk. Because no status page
+    exists, no StatusPage pointer is wired in apis.yml.
+
+change_communication:
+  api_changelog: null
+  detail: >-
+    There is no dated API changelog. Change is communicated at the DATA level
+    rather than the CONTRACT level - NESO's documented pattern is to poll
+    resource_show?id={resource_id} and compare the resource modification date.
+    Corporate and market announcements go out through
+    https://www.neso.energy/news and its RSS feed.
+  data_change_mechanism: 'resource_show -> last_modified / metadata_modified'
+  news: https://www.neso.energy/news
+  news_rss: https://www.neso.energy/rss.xml
+  subscriptions: >-
+    The Data Portal offers signed-in users dataset subscriptions ("My NESO
+    account ... manage your dataset subscriptions"), an email-style notification
+    on dataset updates rather than an API webhook.
+
+deprecated_operations: []
+
+related:
+  conventions: conventions/neso-conventions.yml
+  rate_limits: rate-limits/neso-rate-limits.yml

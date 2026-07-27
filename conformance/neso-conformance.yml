@@ -1,0 +1,147 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Derived from the live API behaviour probed on 2026-07-27, the NESO Data Portal
+  API guidance page, the Carbon Intensity API reference, and the Ofgem Data Best
+  Practice Guidance that sits in NESO's licence. No conformance claim below is
+  asserted on NESO's behalf without evidence; false entries are recorded so the
+  absence is explicit.
+description: >-
+  Which cross-cutting and sector standards NESO's public APIs actually conform
+  to. The headline: the Data Portal is a CKAN Action API 3 implementation and
+  the Carbon Intensity API is a bespoke REST/JSON shape. NO energy-sector data
+  standard (IEC CIM, IEEE 2030.5, Green Button/ESPI, OpenADR, OCPP/OCPI,
+  CDR Consumer Data Standards) is referenced anywhere on any NESO surface.
+
+standards:
+  - id: ckan-action-api-3
+    name: CKAN Action API v3
+    conforms: true
+    evidence: >-
+      status_show reports ckan_version 2.8.7; package_list, package_search,
+      package_show, organization_list, tag_list, resource_search, resource_show,
+      datastore_search and datastore_search_sql all answer with the standard
+      CKAN {help, success, result} envelope.
+    source: https://api.neso.energy/api/3/action/status_show
+  - id: http-rest-json
+    name: REST over HTTPS with JSON responses
+    conforms: true
+    evidence: Both APIs are HTTPS GET with application/json responses.
+  - id: iso8601
+    name: ISO 8601 date/time
+    conforms: true
+    evidence: >-
+      Carbon Intensity uses YYYY-MM-DDThh:mmZ for from/to and YYYY-MM-DD for
+      date; the error body itself names the required ISO 8601 form.
+  - id: cors
+    name: W3C Cross-Origin Resource Sharing
+    conforms: true
+    evidence: 'access-control-allow-origin: * observed on both APIs.'
+  - id: rfc9116-security-txt
+    name: RFC 9116 security.txt
+    conforms: true
+    evidence: >-
+      https://www.neso.energy/.well-known/security.txt returns text/plain with
+      Contact, Expires and Policy fields.
+    artifact: well-known/neso-security.txt
+  - id: hsts
+    name: RFC 6797 HTTP Strict Transport Security
+    conforms: partial
+    evidence: >-
+      www.neso.energy and api.neso.energy send Strict-Transport-Security
+      max-age=31536000 includeSubDomains (preload on the corporate host);
+      api.carbonintensity.org.uk sends no HSTS header.
+    artifact: security/neso-domain-security.yml
+  - id: ogl-v3
+    name: Open Government Licence v3.0
+    conforms: true
+    evidence: >-
+      The National Energy SO Open Data Licence v1.0 is derived from OGL v3.0 and
+      is stated to be compatible with CC BY 4.0. A license_id facet query
+      returned {"ESO": 128} - every Data Portal dataset carries it.
+    source: https://www.neso.energy/data-portal/neso-open-licence
+  - id: ofgem-data-best-practice
+    name: Ofgem Data Best Practice Guidance (RIIO-2 licence condition)
+    conforms: true
+    evidence: >-
+      The "presumed open" principle for Energy System Data is visibly
+      implemented: 128 datasets across 16 data groups are queryable anonymously
+      with no key, account or application, all under an open licence, plus a
+      free public carbon intensity feed. Verified by probe rather than by
+      reading a compliance statement.
+    source: https://www.ofgem.gov.uk/sites/default/files/2021-11/Data_Best_Practice_Guidance_v1.pdf
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use the CKAN {success:false, error:{message, __type}} envelope and
+      an AWS-style {error:{code,message}} object; no application/problem+json.
+  - id: oauth2
+    conforms: false
+    evidence: No OAuth 2.0 anywhere; both APIs are anonymous.
+  - id: openid-connect
+    conforms: false
+    evidence: >-
+      /.well-known/openid-configuration returns 404 on www.neso.energy, a CKAN
+      HTML 404 on api.neso.energy, and a 400 JSON error on
+      api.carbonintensity.org.uk.
+  - id: openapi
+    conforms: false
+    evidence: >-
+      No OpenAPI or Swagger document is published on any host. Probed
+      /openapi.json, /openapi.yaml, /swagger.json, /api-docs and /docs on
+      api.neso.energy, api.carbonintensity.org.uk and
+      carbon-intensity.github.io; the carbon-intensity/api-definitions
+      repository tree contains only a Jekyll/Slate docs site.
+  - id: asyncapi
+    conforms: false
+    evidence: No event, streaming or webhook surface exists on either API.
+  - id: rfc8594-sunset
+    conforms: false
+    evidence: No Sunset or Deprecation headers and no deprecation policy published.
+  - id: rate-limit-headers
+    conforms: false
+    evidence: >-
+      No RateLimit-* or X-RateLimit-* headers; rate guidance is prose only and
+      enforcement is out-of-band IP blocking.
+  - id: dcat
+    name: DCAT / DCAT-AP catalogue metadata
+    conforms: false
+    evidence: >-
+      /catalog.rdf and /catalog.jsonld return the CKAN HTML 404 page; the
+      ckanext-dcat extension is not among the enabled extensions reported by
+      status_show (datastore, s3filestore, showcase).
+  - id: iec-cim-61968-61970
+    conforms: false
+    evidence: No IEC Common Information Model reference on any NESO surface.
+  - id: ieee-2030-5
+    conforms: false
+    evidence: No IEEE 2030.5 (SEP2) reference.
+  - id: green-button-espi
+    conforms: false
+    evidence: No Green Button / ESPI reference; NESO has no consumer usage data.
+  - id: openadr
+    conforms: false
+    evidence: >-
+      The Demand Flexibility Service is published as DATA on the Data Portal,
+      not as an OpenADR signalling interface.
+  - id: ocpp-ocpi
+    conforms: false
+    evidence: Out of scope - NESO is not a charge point operator or e-mobility service provider.
+  - id: cdr-consumer-data-standards
+    conforms: false
+    evidence: >-
+      Not applicable. Great Britain has no consumer energy data-portability
+      regime equivalent to the Australian Consumer Data Right, and NESO holds no
+      retail customer relationships.
+
+certifications_published: false
+certifications_note: >-
+  No SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP or CSA STAR certification is
+  published on any NESO surface, and no trust centre was found by probe
+  (trust.neso.energy and security.neso.energy do not resolve). Because nothing
+  is published, no Compliance or TrustCenter pointer is wired in apis.yml.
+
+related:
+  authentication: authentication/neso-authentication.yml
+  conventions: conventions/neso-conventions.yml
+  domain_security: security/neso-domain-security.yml

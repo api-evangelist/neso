@@ -1,0 +1,178 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://www.neso.energy/data-portal/api-guidance,
+  https://carbon-intensity.github.io/api-definitions/, and live anonymous HTTP
+  probes of both APIs (headers and error bodies captured) on 2026-07-27.
+description: >-
+  Cross-cutting request/response semantics that apply across NESO's two public
+  API surfaces. The two surfaces do NOT share conventions - the Data Portal is a
+  stock CKAN 2.8.7 Action API (envelope, offset pagination, action-name paths)
+  while the Carbon Intensity API is a bespoke path-templated REST/JSON service
+  on AWS API Gateway. They are documented separately below rather than
+  flattened into one false profile.
+
+surfaces:
+  - name: NESO Data Portal API
+    base_url: https://api.neso.energy/api/3/action
+    style: CKAN Action API 3 - action name in the path, parameters as query string (GET) or JSON body (POST)
+    docs: https://www.neso.energy/data-portal/api-guidance
+  - name: Carbon Intensity API
+    base_url: https://api.carbonintensity.org.uk
+    style: REST over HTTPS, path-templated resources, JSON responses, GET only
+    docs: https://carbon-intensity.github.io/api-definitions/
+
+authentication:
+  scheme: none
+  detail: Both surfaces are anonymous. See authentication/neso-authentication.yml.
+
+idempotency:
+  supported: false
+  detail: >-
+    Neither API documents an idempotency key and neither exposes a write
+    operation to a public caller. Every published operation is a read (CKAN
+    read actions and Carbon Intensity GETs), so requests are inherently
+    idempotent by HTTP method, but there is no idempotency contract to honour
+    and no Idempotency-Key header. Recorded as absent rather than implied.
+
+pagination:
+  - surface: NESO Data Portal API
+    style: offset
+    request_params:
+      package_search: 'rows (page size), start (offset), sort'
+      datastore_search: 'limit (page size, default 100), offset'
+      resource_search: 'limit, offset'
+    response_fields:
+      package_search: 'result.count (total), result.results[]'
+      datastore_search: 'result.total, result.records[], result._links.next, result._links.start'
+    detail: >-
+      package_search is Solr-backed and accepts full Solr query syntax on q,
+      plus facet.field for faceting. datastore_search returns _links.next for
+      simple forward paging.
+  - surface: Carbon Intensity API
+    style: none
+    detail: >-
+      No pagination. The window is expressed in the path itself - {from}/{to},
+      /fw24h, /fw48h, /pt24h - and each response returns the full half-hourly
+      series for that window under data[].
+
+filtering_and_query:
+  - surface: NESO Data Portal API
+    mechanisms:
+      - 'package_search?q={solr query} - free text and fielded Solr search over dataset metadata'
+      - 'package_search?facet.field=["license_id"] - faceting'
+      - 'datastore_search?filters={"column":"value"} - exact-match column filters'
+      - 'datastore_search_sql?sql=SELECT ... - arbitrary read-only PostgreSQL SELECT, including joins across resources'
+    sql_notes: >-
+      The datastore is PostgreSQL. Field IDs and resource IDs must both be
+      wrapped in double quotes. Resource IDs are obtainable from the "API"
+      button on any resource page or via package_show.
+  - surface: Carbon Intensity API
+    mechanisms:
+      - 'Path-templated windows: /intensity/{from}/{to}, /intensity/date/{date}/{period}'
+      - 'Regional selectors: /regional/regionid/{regionid}, /regional/postcode/{postcode}, /regional/england|scotland|wales'
+    note: No query-string filtering; every selector is a path segment.
+
+date_time:
+  format: ISO 8601 UTC
+  detail: >-
+    Carbon Intensity uses YYYY-MM-DDThh:mmZ for {from}/{to} and YYYY-MM-DD for
+    {date}; the settlement period selector is 1-48 (half-hourly). The GB half-
+    hour settlement period is the native grain of both surfaces.
+
+field_expansion:
+  supported: false
+  detail: >-
+    CKAN package_show returns the full dataset record including nested
+    resources[], tags[], groups[] and organization by default - there is no
+    sparse-fieldset or expand parameter. Carbon Intensity has no expansion
+    mechanism.
+
+metadata:
+  supported: true
+  detail: >-
+    CKAN carries free-form dataset metadata under extras[] plus first-class
+    fields (author, maintainer, license_id, license_title, license_url,
+    metadata_created, metadata_modified, num_resources, num_tags, version).
+    NESO uses resource_show's modification date as the documented change-
+    detection mechanism instead of a change feed.
+
+request_tracing:
+  - surface: NESO Data Portal API
+    header: none
+    detail: >-
+      No request-id header is returned. Cloudflare's cf-ray is present but is
+      an edge identifier, not a documented API request id.
+  - surface: Carbon Intensity API
+    header: x-amzn-requestid
+    also: x-amzn-trace-id, x-amz-cf-id
+    detail: AWS API Gateway request identifiers, returned on every response.
+
+versioning:
+  - surface: NESO Data Portal API
+    scheme: uri-path
+    current: '3'
+    detail: CKAN Action API version 3, pinned in the path (/api/3/action/). Server is CKAN 2.8.7.
+  - surface: Carbon Intensity API
+    scheme: none
+    detail: >-
+      Unversioned. Paths carry no version segment and no version header is
+      documented. Some sections of the reference are marked "beta" (Generation
+      Mix, Regional) - that is the only stability signal published.
+
+error_envelope:
+  - surface: NESO Data Portal API
+    shape: '{"help": "<help_show url>", "success": false, "error": {"message": "...", "__type": "..."}}'
+    detail: >-
+      CKAN always returns success:true|false. Unknown action names fall outside
+      the envelope and return a bare JSON string with HTTP 400.
+    catalog: errors/neso-error-codes.yml
+  - surface: Carbon Intensity API
+    shape: '{"error": {"code": "400 Bad Request", "message": "..."}}'
+    catalog: errors/neso-error-codes.yml
+
+rate_limit_signaling:
+  headers: none
+  detail: >-
+    Neither API returns RateLimit-* or X-RateLimit-* headers and neither
+    returns 429 in normal operation. NESO publishes courtesy limits in prose
+    (1 request/second to the CKAN API, 2 requests/minute to the Datastore API)
+    and reserves the right to block an IP address that degrades the service.
+    Enforcement is therefore out-of-band, not signalled in the response.
+  detail_artifact: rate-limits/neso-rate-limits.yml
+
+cors:
+  enabled: true
+  detail: >-
+    Both APIs return access-control-allow-origin '*', so both are usable
+    directly from browser JavaScript. This is consistent with their open-data
+    purpose.
+
+caching:
+  - surface: NESO Data Portal API
+    detail: 'cache-control: no-cache, pragma: no-cache. Cloudflare cf-cache-status DYNAMIC.'
+  - surface: Carbon Intensity API
+    detail: CloudFront fronted; responses observed as x-cache Miss from cloudfront.
+
+change_detection:
+  mechanism: resource_show modification date
+  detail: >-
+    NESO explicitly asks consumers not to poll data files for change. The
+    documented pattern is to call resource_show?id={resource_id}, compare the
+    modification date, and only fetch through the Datastore API when it has
+    moved.
+
+licensing_and_attribution:
+  licence: National Energy SO Open Data Licence v1.0
+  licence_url: https://www.neso.energy/data-portal/neso-open-licence
+  derived_from: Open Government Licence v3.0; stated compatible with CC BY 4.0
+  attribution_required: true
+  attribution_form: 'Supported by National Energy SO Open Data'
+  coverage: All 128 Data Portal datasets carry license_id "ESO" (verified by facet query).
+
+related:
+  authentication: authentication/neso-authentication.yml
+  errors: errors/neso-error-codes.yml
+  lifecycle: lifecycle/neso-lifecycle.yml
+  rate_limits: rate-limits/neso-rate-limits.yml
+  data_model: data-model/neso-data-model.yml

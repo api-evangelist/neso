@@ -1,0 +1,33 @@
+generated: '2026-07-27'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.neso.energy
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Aug 30 15:27:23 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: api.neso.energy
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep  2 17:07:34 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: api.carbonintensity.org.uk
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Feb  6 23:59:59 2027 GMT
+  hsts: null
+domains:
+- domain: neso.energy
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: reject
+- domain: carbonintensity.org.uk
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: false

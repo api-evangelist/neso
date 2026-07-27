@@ -1,0 +1,209 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  Derived from live response payloads captured anonymously on 2026-07-27
+  (package_show, organization_list, datastore_search, /intensity, /regional,
+  /generation) plus the naming table published at
+  https://www.neso.energy/data-portal/api-guidance. NESO publishes no OpenAPI
+  and no schema documents, so every field listed below was observed in a real
+  response rather than read from a contract.
+description: >-
+  The entity-relationship graph behind NESO's two public APIs. The Data Portal
+  is CKAN's catalogue model with a tabular datastore attached; NESO renames the
+  CKAN terms for its users. The Carbon Intensity API has a small, flat model
+  built around a half-hourly settlement period.
+
+naming_map:
+  note: NESO's published mapping between CKAN API terms and Data Portal UI terms.
+  pairs:
+    - {api: Organization, portal: Data Group}
+    - {api: Package, portal: Dataset}
+    - {api: Resource, portal: Data File}
+
+entities:
+  - name: Organization
+    alias: Data Group
+    api: NESO Data Portal API
+    identifier: name (slug)
+    observed_values:
+      - ancillary-services
+      - balancing
+      - carbon-intensity1
+      - connection-registers
+      - constraint-management
+      - demand
+      - dfs
+      - electricity-market-reform
+      - future-energy-scenarios
+      - generation
+      - interconnectors
+      - network-charges
+      - plans-reports-analysis
+      - strategic-energy-planning
+      - system
+      - trade-data
+    count: 16
+    source_operation: 'GET /api/3/action/organization_list'
+  - name: Package
+    alias: Dataset
+    api: NESO Data Portal API
+    identifier: 'id (uuid) or name (slug)'
+    count: 128
+    fields:
+      - id
+      - name
+      - title
+      - notes
+      - author
+      - author_email
+      - maintainer
+      - maintainer_email
+      - license_id
+      - license_title
+      - license_url
+      - isopen
+      - private
+      - state
+      - type
+      - version
+      - url
+      - owner_org
+      - organization
+      - num_resources
+      - num_tags
+      - metadata_created
+      - metadata_modified
+      - resources
+      - tags
+      - groups
+      - extras
+      - relationships_as_object
+      - relationships_as_subject
+      - creator_user_id
+      - revision_id
+    source_operation: 'GET /api/3/action/package_show?id={id}'
+  - name: Resource
+    alias: Data File
+    api: NESO Data Portal API
+    identifier: id (uuid)
+    fields:
+      - id
+      - package_id
+      - name
+      - description
+      - format
+      - mimetype
+      - mimetype_inner
+      - url
+      - url_type
+      - resource_type
+      - size
+      - hash
+      - position
+      - state
+      - datastore_active
+      - created
+      - last_modified
+      - metadata_modified
+      - cache_url
+      - cache_last_updated
+      - revision_id
+    source_operation: 'GET /api/3/action/resource_show?id={id}'
+    note: >-
+      datastore_active indicates whether the resource is queryable through the
+      Datastore API. last_modified is the documented change-detection field.
+  - name: DatastoreRecord
+    api: NESO Data Portal API
+    identifier: _id (row number within the resource table)
+    detail: >-
+      Rows inside a tabular resource, backed by PostgreSQL. Column names and
+      types are resource-specific and returned in result.fields[] alongside
+      result.records[].
+    source_operation: 'GET /api/3/action/datastore_search?resource_id={id}'
+  - name: Tag
+    api: NESO Data Portal API
+    identifier: name
+    source_operation: 'GET /api/3/action/tag_list'
+  - name: IntensityPeriod
+    api: Carbon Intensity API
+    identifier: 'from/to (half-hourly settlement period, ISO 8601 UTC)'
+    fields:
+      from: ISO 8601 datetime, start of the half hour
+      to: ISO 8601 datetime, end of the half hour
+      intensity.forecast: integer gCO2/kWh
+      intensity.actual: integer gCO2/kWh (null for future periods)
+      intensity.index: 'very low | low | moderate | high | very high'
+    source_operation: 'GET /intensity'
+  - name: EmissionFactor
+    api: Carbon Intensity API
+    identifier: fuel
+    detail: gCO2/kWh emission factor per fuel type.
+    source_operation: 'GET /intensity/factors'
+  - name: GenerationMix
+    api: Carbon Intensity API
+    identifier: 'from/to + fuel'
+    fields:
+      fuel: 'biomass | coal | imports | gas | nuclear | other | hydro | solar | wind'
+      perc: percentage of generation in the period
+    source_operation: 'GET /generation'
+  - name: Region
+    api: Carbon Intensity API
+    identifier: regionid (integer)
+    fields:
+      regionid: integer, 1..n
+      dnoregion: distribution network operator licence area name
+      shortname: human short name (e.g. North Scotland)
+      intensity: forecast + index (no actual at regional level)
+      generationmix: array of fuel/perc
+    selectors: [regionid, postcode, nation (england|scotland|wales)]
+    source_operation: 'GET /regional'
+    observed_example: '{regionid: 1, dnoregion: "Scottish Hydro Electric Power Distribution", shortname: "North Scotland"}'
+
+relationships:
+  - from: Organization
+    to: Package
+    type: has_many
+    via: owner_org / organization
+  - from: Package
+    to: Resource
+    type: has_many
+    via: resources[].package_id
+  - from: Package
+    to: Tag
+    type: has_many
+    via: tags[]
+  - from: Resource
+    to: DatastoreRecord
+    type: has_many
+    via: 'datastore_search?resource_id'
+    condition: only when datastore_active is true
+  - from: Package
+    to: Package
+    type: has_many
+    via: relationships_as_subject / relationships_as_object
+    note: CKAN dataset-to-dataset relationships; present in the model, sparsely used on this portal.
+  - from: IntensityPeriod
+    to: GenerationMix
+    type: has_one
+    via: shared from/to settlement period
+  - from: Region
+    to: GenerationMix
+    type: has_many
+    via: regions[].generationmix[]
+  - from: Region
+    to: IntensityPeriod
+    type: has_one
+    via: regions[].intensity within a from/to period
+
+grain:
+  data_portal: dataset -> data file -> tabular row
+  carbon_intensity: GB half-hourly settlement period (48 per day)
+
+identifiers:
+  ckan_dataset: 'uuid or slug (e.g. historic-demand-data)'
+  ckan_resource: 'uuid (e.g. bb44a1b5-75b1-4db2-8491-257f23385006)'
+  region: 'integer regionid, or GB postcode outward code, or nation name'
+
+related:
+  conventions: conventions/neso-conventions.yml
+  mcp: mcp/neso-mcp.yml
