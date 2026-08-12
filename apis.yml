@@ -119,6 +119,8 @@ apis:
   - type: DataModel
     url: data-model/neso-data-model.yml
 common:
+- type: IssueTracker
+  url: https://github.com/carbon-intensity/api-definitions/issues
 - type: VulnerabilityDisclosure
   url: security/neso-vulnerability-disclosure.yml
 - type: Security
