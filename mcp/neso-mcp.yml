@@ -1,164 +1,190 @@
 generated: '2026-07-27'
 method: derived
 status: candidate
-source: >-
-  Derived from the endpoint surfaces NESO documents and that were verified live
-  by anonymous probe on 2026-07-27
-  (https://www.neso.energy/data-portal/api-guidance and
-  https://carbon-intensity.github.io/api-definitions/). NESO publishes no
-  OpenAPI, so tools are bound to real HTTP method + path rather than to an
-  operationId.
-description: >-
-  NESO operates NO first-party MCP server. This is a CANDIDATE tool design for
-  one, derived from the two live anonymous APIs. Both surfaces are unusually
-  well suited to MCP: no authentication, CORS-open, read-only, and semantically
-  self-describing. A third-party community MCP server for the Carbon Intensity
-  API already exists and is recorded below.
-
+source: Derived from the endpoint surfaces NESO documents and that were verified live by anonymous probe
+  on 2026-07-27 (https://www.neso.energy/data-portal/api-guidance and https://carbon-intensity.github.io/api-definitions/).
+  NESO publishes no OpenAPI, so tools are bound to real HTTP method + path rather than to an operationId.
+description: 'NESO operates NO first-party MCP server. This is a CANDIDATE tool design for one, derived
+  from the two live anonymous APIs. Both surfaces are unusually well suited to MCP: no authentication,
+  CORS-open, read-only, and semantically self-describing. A third-party community MCP server for the Carbon
+  Intensity API already exists and is recorded below.'
 server:
   name: neso
   published: false
   transport: null
   url: null
   authentication: none required (both upstream APIs are anonymous)
-  note: >-
-    No hosted or remote MCP server is published by NESO. Nothing in the
-    neso-energy or carbon-intensity GitHub organisations is an MCP server.
-
+  note: No hosted or remote MCP server is published by NESO. Nothing in the neso-energy or carbon-intensity
+    GitHub organisations is an MCP server.
 third_party_servers:
-  - name: '@pipeworx/mcp-carbon'
-    registry: npm
-    url: https://www.npmjs.com/package/@pipeworx/mcp-carbon
-    repository: https://github.com/pipeworx-io/mcp-carbon
-    covers: Carbon Intensity API
-    official: false
-    note: >-
-      Community MCP server - "Carbon MCP - UK Carbon Intensity API (free, no
-      auth)". Not a NESO product and not endorsed by NESO.
-
+- name: '@pipeworx/mcp-carbon'
+  registry: npm
+  url: https://www.npmjs.com/package/@pipeworx/mcp-carbon
+  repository: https://github.com/pipeworx-io/mcp-carbon
+  covers: Carbon Intensity API
+  official: false
+  note: Community MCP server - "Carbon MCP - UK Carbon Intensity API (free, no auth)". Not a NESO product
+    and not endorsed by NESO.
 tools:
-  - name: search_datasets
-    description: Search the 128 open datasets on the NESO Data Portal by free text or Solr field query.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/package_search?q={query}&rows={rows}&start={start}'
-    inputs: [query, rows, start, sort, facet.field]
-    verified: '2026-07-27'
-  - name: list_datasets
-    description: List every dataset name published on the NESO Data Portal.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/package_list'
-    inputs: []
-    verified: '2026-07-27'
-  - name: list_data_groups
-    description: List the Data Groups (CKAN organizations) - balancing, demand, dfs, interconnectors, generation, and others.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/organization_list'
-    inputs: []
-    verified: '2026-07-27'
-  - name: get_dataset
-    description: Get a dataset's full metadata including its resources, tags, licence and modification dates.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/package_show?id={dataset_id}'
-    inputs: [dataset_id]
-    verified: '2026-07-27'
-  - name: get_resource
-    description: Get a data file's metadata, including last_modified - the documented way to detect change without downloading.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/resource_show?id={resource_id}'
-    inputs: [resource_id]
-    verified: '2026-07-27'
-  - name: search_resources
-    description: Search data files across the portal by name or other resource fields.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/resource_search?query={field:value}'
-    inputs: [query]
-    verified: '2026-07-27'
-  - name: list_tags
-    description: List the tag vocabulary used across Data Portal datasets.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/tag_list'
-    inputs: []
-    verified: '2026-07-27'
-  - name: query_datastore
-    description: Query records inside a tabular data file with column filters and paging.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/datastore_search?resource_id={resource_id}&filters={filters}&limit={limit}&offset={offset}'
-    inputs: [resource_id, filters, q, limit, offset]
-    rate_note: NESO asks for a maximum of two datastore requests per minute.
-    verified: '2026-07-27'
-  - name: query_datastore_sql
-    description: Run a read-only PostgreSQL SELECT against one or more data files, including joins and aggregates.
-    api: NESO Data Portal API
-    source_operation: 'GET https://api.neso.energy/api/3/action/datastore_search_sql?sql={sql}'
-    inputs: [sql]
-    consequence: read-only; the datastore rejects anything other than SELECT
-    rate_note: NESO asks for a maximum of two datastore requests per minute.
-    verified: '2026-07-27'
-  - name: get_carbon_intensity_now
-    description: Current half-hourly national carbon intensity for Great Britain - forecast, actual and index.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/intensity'
-    inputs: []
-    verified: '2026-07-27'
-  - name: get_carbon_intensity_forecast
-    description: National carbon intensity forecast 24 or 48 hours forward from a given time.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/intensity/{from}/fw48h'
-    inputs: [from]
-    verified: '2026-07-27'
-  - name: get_carbon_intensity_range
-    description: National carbon intensity between two datetimes, or for a given date and settlement period.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/intensity/{from}/{to}'
-    also: 'GET /intensity/date/{date}, GET /intensity/date/{date}/{period}'
-    inputs: [from, to, date, period]
-    verified: '2026-07-27'
-  - name: get_intensity_statistics
-    description: Average, maximum and minimum carbon intensity over a period, optionally blocked into n-hour buckets.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/intensity/stats/{from}/{to}'
-    also: 'GET /intensity/stats/{from}/{to}/{block}'
-    inputs: [from, to, block]
-    verified: '2026-07-27'
-  - name: get_emission_factors
-    description: Per-fuel carbon emission factors in gCO2 per kWh.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/intensity/factors'
-    inputs: []
-    verified: '2026-07-27'
-  - name: get_generation_mix
-    description: Half-hourly Great Britain generation mix by fuel, now or over a window.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/generation'
-    also: 'GET /generation/{from}/{to}, GET /generation/{from}/pt24h'
-    inputs: [from, to]
-    verified: '2026-07-27'
-  - name: get_regional_intensity
-    description: Carbon intensity and generation mix for a DNO region, a region id, a postcode, or England/Scotland/Wales.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/regional'
-    also: 'GET /regional/postcode/{postcode}, GET /regional/regionid/{regionid}, GET /regional/england|scotland|wales'
-    inputs: [postcode, regionid, nation]
-    verified: '2026-07-27'
-  - name: get_regional_forecast
-    description: Regional carbon intensity forecast 24 or 48 hours forward, nationally or for one postcode or region id.
-    api: Carbon Intensity API
-    source_operation: 'GET https://api.carbonintensity.org.uk/regional/intensity/{from}/fw48h'
-    also: 'GET /regional/intensity/{from}/fw48h/postcode/{postcode}, GET /regional/intensity/{from}/fw48h/regionid/{regionid}'
-    inputs: [from, postcode, regionid]
-    verified: '2026-07-27'
-
+- name: search_datasets
+  description: Search the 128 open datasets on the NESO Data Portal by free text or Solr field query.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/package_search?q={query}&rows={rows}&start={start}
+  inputs:
+  - query
+  - rows
+  - start
+  - sort
+  - facet.field
+  verified: '2026-07-27'
+- name: list_datasets
+  description: List every dataset name published on the NESO Data Portal.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/package_list
+  inputs: []
+  verified: '2026-07-27'
+- name: list_data_groups
+  description: List the Data Groups (CKAN organizations) - balancing, demand, dfs, interconnectors, generation,
+    and others.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/organization_list
+  inputs: []
+  verified: '2026-07-27'
+- name: get_dataset
+  description: Get a dataset's full metadata including its resources, tags, licence and modification dates.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/package_show?id={dataset_id}
+  inputs:
+  - dataset_id
+  verified: '2026-07-27'
+- name: get_resource
+  description: Get a data file's metadata, including last_modified - the documented way to detect change
+    without downloading.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/resource_show?id={resource_id}
+  inputs:
+  - resource_id
+  verified: '2026-07-27'
+- name: search_resources
+  description: Search data files across the portal by name or other resource fields.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/resource_search?query={field:value}
+  inputs:
+  - query
+  verified: '2026-07-27'
+- name: list_tags
+  description: List the tag vocabulary used across Data Portal datasets.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/tag_list
+  inputs: []
+  verified: '2026-07-27'
+- name: query_datastore
+  description: Query records inside a tabular data file with column filters and paging.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/datastore_search?resource_id={resource_id}&filters={filters}&limit={limit}&offset={offset}
+  inputs:
+  - resource_id
+  - filters
+  - q
+  - limit
+  - offset
+  rate_note: NESO asks for a maximum of two datastore requests per minute.
+  verified: '2026-07-27'
+- name: query_datastore_sql
+  description: Run a read-only PostgreSQL SELECT against one or more data files, including joins and aggregates.
+  api: NESO Data Portal API
+  source_operation: GET https://api.neso.energy/api/3/action/datastore_search_sql?sql={sql}
+  inputs:
+  - sql
+  consequence: read-only; the datastore rejects anything other than SELECT
+  rate_note: NESO asks for a maximum of two datastore requests per minute.
+  verified: '2026-07-27'
+- name: get_carbon_intensity_now
+  description: Current half-hourly national carbon intensity for Great Britain - forecast, actual and
+    index.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/intensity
+  inputs: []
+  verified: '2026-07-27'
+- name: get_carbon_intensity_forecast
+  description: National carbon intensity forecast 24 or 48 hours forward from a given time.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/intensity/{from}/fw48h
+  inputs:
+  - from
+  verified: '2026-07-27'
+- name: get_carbon_intensity_range
+  description: National carbon intensity between two datetimes, or for a given date and settlement period.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/intensity/{from}/{to}
+  also: GET /intensity/date/{date}, GET /intensity/date/{date}/{period}
+  inputs:
+  - from
+  - to
+  - date
+  - period
+  verified: '2026-07-27'
+- name: get_intensity_statistics
+  description: Average, maximum and minimum carbon intensity over a period, optionally blocked into n-hour
+    buckets.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/intensity/stats/{from}/{to}
+  also: GET /intensity/stats/{from}/{to}/{block}
+  inputs:
+  - from
+  - to
+  - block
+  verified: '2026-07-27'
+- name: get_emission_factors
+  description: Per-fuel carbon emission factors in gCO2 per kWh.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/intensity/factors
+  inputs: []
+  verified: '2026-07-27'
+- name: get_generation_mix
+  description: Half-hourly Great Britain generation mix by fuel, now or over a window.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/generation
+  also: GET /generation/{from}/{to}, GET /generation/{from}/pt24h
+  inputs:
+  - from
+  - to
+  verified: '2026-07-27'
+- name: get_regional_intensity
+  description: Carbon intensity and generation mix for a DNO region, a region id, a postcode, or England/Scotland/Wales.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/regional
+  also: GET /regional/postcode/{postcode}, GET /regional/regionid/{regionid}, GET /regional/england|scotland|wales
+  inputs:
+  - postcode
+  - regionid
+  - nation
+  verified: '2026-07-27'
+- name: get_regional_forecast
+  description: Regional carbon intensity forecast 24 or 48 hours forward, nationally or for one postcode
+    or region id.
+  api: Carbon Intensity API
+  source_operation: GET https://api.carbonintensity.org.uk/regional/intensity/{from}/fw48h
+  also: GET /regional/intensity/{from}/fw48h/postcode/{postcode}, GET /regional/intensity/{from}/fw48h/regionid/{regionid}
+  inputs:
+  - from
+  - postcode
+  - regionid
+  verified: '2026-07-27'
 coverage:
   tools_defined: 17
   apis_covered: 2
   documented_carbon_intensity_paths: 33
   ckan_actions_supported: 9
   all_read_only: true
-
 crosswalk:
   emitted: false
-  reason: >-
-    A tool crosswalk binds MCP tools to OpenAPI operationIds. NESO publishes no
-    OpenAPI and no GraphQL surface, so there is nothing to bind to; the
-    source_operation on each tool above carries the real HTTP method and path
-    instead.
+  reason: A tool crosswalk binds MCP tools to OpenAPI operationIds. NESO publishes no OpenAPI and no GraphQL
+    surface, so there is nothing to bind to; the source_operation on each tool above carries the real
+    HTTP method and path instead.
+deployment:
+  mode: none
+  verified: derived
+  tools: 17
+  checked: '2026-08-12'
+  source: catalog MCP census
