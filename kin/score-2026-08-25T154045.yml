@@ -1,0 +1,52 @@
+# Kin Score artifact — neso — 2026-08-25T154045
+# The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
+---
+kin_score:
+  slug: neso
+  schema_version: 0.14.0
+  scored_at: '2026-08-25'
+  run_ts: 2026-08-25T154045
+  composite: 30.8
+  band: thin
+  facets:
+    discoverability: 79.6
+    contract_quality: 0.0
+    governance: 4.5
+    operational_transparency: 44.7
+    developer_ergonomics: 44.6
+    commercial_clarity: 21.1
+    contract_governance: 4.5
+    access_clarity: 21.1
+  agent_readiness:
+    score: 11.0
+    band: agent-aware
+    dimensions:
+      spec_presence: false
+      agentic_access: false
+      reversibility_documented: false
+      mcp_server: false
+      auth_clarity: bearer
+      idempotency: false
+      error_semantics: documented
+      openapi_examples: false
+      rate_limit_signal: documented
+      event_surface_described: false
+      agent_skills: derived
+      well_known_catalog: false
+      consent_identity: true
+      agent_card: false
+      dry_run_mode: false
+      delegated_identity: false
+      protected_resource_metadata: false
+      dynamic_client_registration: false
+      agentic_commerce: false
+  regulatory:
+    applies: true
+    regime: Energy & Utilities
+    regime_id: energy_utilities
+    score: 41.9
+    matched_via: tags
+  provenance:
+    mcp: derived
+    skills: derived
+    conformance: derived
