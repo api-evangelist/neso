@@ -20,6 +20,18 @@ description: The National Energy System Operator (NESO) is Great Britain's publi
   rather than through the system operator. NESO's open-data obligation comes from Ofgem's
   Data Best Practice Guidance embedded in its RIIO-2 licence, and unlike most of the sector
   that obligation is visibly implemented rather than merely claimed.
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: free
   onboarding: open
