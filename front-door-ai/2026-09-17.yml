@@ -1,0 +1,27 @@
+# Front Door AI Index — neso — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: neso
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.neso.energy
+  final_host: www.neso.energy
+  ownership: own
+  owner: neso
+  shares_host_with:
+  - national-energy-system-operator
+  - national-grid
+  inherited_from: null
+  verdict: scored
+  score: 1
+  host_score: 1
+  density: 0.36
+  words: 2744
+  tiers:
+    agentic: 0
+    core: 1
+    model: 0
+  ambiguous: 0
+  top_terms:
+    AI: 1
