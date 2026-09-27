@@ -1,0 +1,72 @@
+openapi: 3.2.0
+info:
+  title: NESO Data Portal Search API
+  description: 'The National Energy System Operator (NESO) Data Portal API is a CKAN v3 API providing programmatic access to NESO datasets including wind forecasts, demand predictions, balancing services, transmission constraints, and other UK energy system data. Rate limits: maximum 1 request per second for the CKAN API and 2 requests per minute for the Datastore API.'
+  version: '3'
+  contact:
+    name: NESO Data Portal
+    url: https://www.neso.energy/data-portal
+  termsOfService: https://www.neso.energy/data-portal/api-guidance
+servers:
+- url: https://api.neso.energy/api/3/action
+  description: NESO CKAN API production endpoint
+tags:
+- name: Search
+  description: Search endpoints for datasets and resources.
+paths:
+  /package_search:
+    get:
+      tags:
+      - Search
+      summary: Search datasets
+      description: Searches datasets by query criteria.
+      operationId: packageSearch
+      parameters:
+      - name: q
+        in: query
+        required: true
+        description: Search query string.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Matching datasets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+  /resource_search:
+    get:
+      tags:
+      - Search
+      summary: Search resources
+      description: Searches data files (resources) by query criteria.
+      operationId: resourceSearch
+      parameters:
+      - name: q
+        in: query
+        required: true
+        description: Search query string.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Matching resources.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+components:
+  schemas:
+    CkanResponse:
+      type: object
+      description: Standard CKAN API response envelope.
+      properties:
+        help:
+          type: string
+          description: URL to the help endpoint for the action.
+        success:
+          type: boolean
+          description: Whether the request was successful.
+        result:
+          description: Action-specific payload.

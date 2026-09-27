@@ -1,0 +1,72 @@
+openapi: 3.2.0
+info:
+  title: NESO Data Portal Discovery API
+  description: 'The National Energy System Operator (NESO) Data Portal API is a CKAN v3 API providing programmatic access to NESO datasets including wind forecasts, demand predictions, balancing services, transmission constraints, and other UK energy system data. Rate limits: maximum 1 request per second for the CKAN API and 2 requests per minute for the Datastore API.'
+  version: '3'
+  contact:
+    name: NESO Data Portal
+    url: https://www.neso.energy/data-portal
+  termsOfService: https://www.neso.energy/data-portal/api-guidance
+servers:
+- url: https://api.neso.energy/api/3/action
+  description: NESO CKAN API production endpoint
+tags:
+- name: Discovery
+  description: Discovery endpoints for organizations, datasets, and tags.
+paths:
+  /organization_list:
+    get:
+      tags:
+      - Discovery
+      summary: List data groups
+      description: Returns a list of all data groups (CKAN organizations) on the NESO Data Portal.
+      operationId: organizationList
+      responses:
+        '200':
+          description: List of organizations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+  /package_list:
+    get:
+      tags:
+      - Discovery
+      summary: List datasets
+      description: Returns a list of all datasets (CKAN packages) on the NESO Data Portal.
+      operationId: packageList
+      responses:
+        '200':
+          description: List of dataset identifiers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+  /tag_list:
+    get:
+      tags:
+      - Discovery
+      summary: List tags
+      description: Returns a list of available tags on the NESO Data Portal.
+      operationId: tagList
+      responses:
+        '200':
+          description: List of tags.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+components:
+  schemas:
+    CkanResponse:
+      type: object
+      description: Standard CKAN API response envelope.
+      properties:
+        help:
+          type: string
+          description: URL to the help endpoint for the action.
+        success:
+          type: boolean
+          description: Whether the request was successful.
+        result:
+          description: Action-specific payload.

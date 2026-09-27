@@ -1,0 +1,92 @@
+openapi: 3.2.0
+info:
+  title: NESO Data Portal Datastore API
+  description: 'The National Energy System Operator (NESO) Data Portal API is a CKAN v3 API providing programmatic access to NESO datasets including wind forecasts, demand predictions, balancing services, transmission constraints, and other UK energy system data. Rate limits: maximum 1 request per second for the CKAN API and 2 requests per minute for the Datastore API.'
+  version: '3'
+  contact:
+    name: NESO Data Portal
+    url: https://www.neso.energy/data-portal
+  termsOfService: https://www.neso.energy/data-portal/api-guidance
+servers:
+- url: https://api.neso.energy/api/3/action
+  description: NESO CKAN API production endpoint
+tags:
+- name: Datastore
+  description: Query tabular data with filters or PostgreSQL-style SQL.
+paths:
+  /datastore_search:
+    get:
+      tags:
+      - Datastore
+      summary: Query tabular data
+      description: Queries the datastore for tabular records with optional filters and pagination.
+      operationId: datastoreSearch
+      parameters:
+      - name: resource_id
+        in: query
+        required: true
+        description: Resource identifier whose datastore is being queried.
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of records to return.
+        schema:
+          type: integer
+          default: 100
+      - name: offset
+        in: query
+        required: false
+        description: Offset into the result set.
+        schema:
+          type: integer
+          default: 0
+      - name: q
+        in: query
+        required: false
+        description: Free-text query against indexed fields.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Datastore records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+  /datastore_search_sql:
+    get:
+      tags:
+      - Datastore
+      summary: Query datastore via SQL
+      description: Queries the datastore using PostgreSQL syntax. Field IDs and Resource IDs must be enclosed in double quotes.
+      operationId: datastoreSearchSql
+      parameters:
+      - name: sql
+        in: query
+        required: true
+        description: PostgreSQL-syntax SQL query.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SQL query results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CkanResponse'
+components:
+  schemas:
+    CkanResponse:
+      type: object
+      description: Standard CKAN API response envelope.
+      properties:
+        help:
+          type: string
+          description: URL to the help endpoint for the action.
+        success:
+          type: boolean
+          description: Whether the request was successful.
+        result:
+          description: Action-specific payload.

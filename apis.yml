@@ -21,16 +21,19 @@ description: The National Energy System Operator (NESO) is Great Britain's publi
   Data Best Practice Guidance embedded in its RIIO-2 licence, and unlike most of the sector
   that obligation is visibly implemented rather than merely claimed.
 deliveryModel:
-  model: unknown
+  model: saas
+  license_evidence:
+    not_product:
+    - carbon-intensity/api-definitions
   open_source: unknown
   commercial: true
   callable_host: false
-  label: Delivery model not determined — needs a product licence on record
+  label: Hosted service · you call their endpoint
   confidence: low
   source:
   - pricing
-  - repository-unlicensed
-  generated: '2026-08-28'
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: free
@@ -56,53 +59,19 @@ tags:
 - Renewables
 - Gas
 - Demand Response
+- Carbon Intensity
 created: '2026-07-27'
 modified: '2026-07-27'
 specificationVersion: '0.23'
 apis:
-- aid: neso:neso-data-portal-api
-  name: NESO Data Portal API
-  description: The public CKAN 2.8.7 API behind the NESO Data Portal, serving 128 open datasets
-    covering GB electricity demand, generation, balancing, ancillary services, constraints,
-    interconnectors, connection registers, network charges, the Demand Flexibility Service,
-    and Future Energy Scenarios. Anonymous and unauthenticated - package_list, package_search,
-    package_show, resource_search, resource_show, datastore_search and datastore_search_sql
-    (PostgreSQL) all answer 200 with no key. All 128 datasets carry the NESO Open Data Licence.
-    NESO asks for a maximum of one request per second against the CKAN API and two requests
-    per minute against the datastore.
-  humanURL: https://www.neso.energy/data-portal/api-guidance
-  baseURL: https://api.neso.energy/api/3/action
-  tags:
-  - Open Data
-  - Energy Markets
-  - Electricity
-  - Demand
-  - CKAN
-  properties:
-  - type: Documentation
-    url: https://www.neso.energy/data-portal
-  - type: APIReference
-    url: https://www.neso.energy/data-portal/api-guidance
-  - type: Licensing
-    url: https://www.neso.energy/data-portal/neso-open-licence
-  - type: RateLimits
-    url: rate-limits/neso-rate-limits.yml
-  - type: Authentication
-    url: authentication/neso-authentication.yml
-  - type: Conventions
-    url: conventions/neso-conventions.yml
-  - type: ErrorCatalog
-    url: errors/neso-error-codes.yml
-  - type: DataModel
-    url: data-model/neso-data-model.yml
 - aid: neso:neso-carbon-intensity-api
   name: Carbon Intensity API
-  description: The official Carbon Intensity API for Great Britain, developed by NESO, giving
-    national and regional carbon intensity of GB electricity - actual, forecast up to 96+
-    hours ahead, half-hourly generation mix, per-fuel emission factors, and regional breakdowns
-    by DNO region, region id, or postcode. Fully anonymous REST/JSON over HTTPS with no API
-    key and no registration; documented as a Slate reference site rather than as a downloadable
-    OpenAPI contract.
+  description: >-
+    The official Carbon Intensity API for Great Britain, developed by NESO, giving national and regional
+    carbon intensity of GB electricity - actual, forecast up to 96+ hours ahead, half-hourly generation
+    mix, per-fuel emission factors, and regional breakdowns by DNO region, region id, or postcode. Fully
+    anonymous REST/JSON over HTTPS with no API key and no registration; documented as a Slate reference
+    site rather than as a downloadable OpenAPI contract.
   humanURL: https://carbon-intensity.github.io/api-definitions/
   baseURL: https://api.carbonintensity.org.uk
   tags:
@@ -122,6 +91,110 @@ apis:
     url: https://github.com/carbon-intensity/api-definitions
   - type: TermsOfService
     url: https://github.com/carbon-intensity/terms
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
+- aid: neso:neso-datastore-api
+  name: National Energy System Operator (NESO) Datastore API
+  description: Query tabular data with filters or PostgreSQL-style SQL.
+  humanURL: https://www.neso.energy/data-portal/api-guidance
+  baseURL: https://api.neso.energy/api/3/action
+  tags:
+  - Datastore
+  properties:
+  - type: OpenAPI
+    url: openapi/neso-datastore-api-openapi.yml
+  - type: Documentation
+    url: https://www.neso.energy/data-portal
+  - type: APIReference
+    url: https://www.neso.energy/data-portal/api-guidance
+  - type: Licensing
+    url: https://www.neso.energy/data-portal/neso-open-licence
+  - type: RateLimits
+    url: rate-limits/neso-rate-limits.yml
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
+- aid: neso:neso-discovery-api
+  name: National Energy System Operator (NESO) Discovery API
+  description: Discovery endpoints for organizations, datasets, and tags.
+  humanURL: https://www.neso.energy/data-portal/api-guidance
+  baseURL: https://api.neso.energy/api/3/action
+  tags:
+  - Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/neso-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://www.neso.energy/data-portal
+  - type: APIReference
+    url: https://www.neso.energy/data-portal/api-guidance
+  - type: Licensing
+    url: https://www.neso.energy/data-portal/neso-open-licence
+  - type: RateLimits
+    url: rate-limits/neso-rate-limits.yml
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
+- aid: neso:neso-metadata-api
+  name: National Energy System Operator (NESO) Metadata API
+  description: Retrieve metadata for datasets and resources.
+  humanURL: https://www.neso.energy/data-portal/api-guidance
+  baseURL: https://api.neso.energy/api/3/action
+  tags:
+  - Metadata
+  properties:
+  - type: OpenAPI
+    url: openapi/neso-metadata-api-openapi.yml
+  - type: Documentation
+    url: https://www.neso.energy/data-portal
+  - type: APIReference
+    url: https://www.neso.energy/data-portal/api-guidance
+  - type: Licensing
+    url: https://www.neso.energy/data-portal/neso-open-licence
+  - type: RateLimits
+    url: rate-limits/neso-rate-limits.yml
+  - type: Authentication
+    url: authentication/neso-authentication.yml
+  - type: Conventions
+    url: conventions/neso-conventions.yml
+  - type: ErrorCatalog
+    url: errors/neso-error-codes.yml
+  - type: DataModel
+    url: data-model/neso-data-model.yml
+- aid: neso:neso-search-api
+  name: National Energy System Operator (NESO) Search API
+  description: Search endpoints for datasets and resources.
+  humanURL: https://www.neso.energy/data-portal/api-guidance
+  baseURL: https://api.neso.energy/api/3/action
+  tags:
+  - Search
+  properties:
+  - type: OpenAPI
+    url: openapi/neso-search-api-openapi.yml
+  - type: Documentation
+    url: https://www.neso.energy/data-portal
+  - type: APIReference
+    url: https://www.neso.energy/data-portal/api-guidance
+  - type: Licensing
+    url: https://www.neso.energy/data-portal/neso-open-licence
+  - type: RateLimits
+    url: rate-limits/neso-rate-limits.yml
   - type: Authentication
     url: authentication/neso-authentication.yml
   - type: Conventions

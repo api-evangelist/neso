@@ -1,0 +1,297 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NESO Data Portal API",
+    "description": "The National Energy System Operator (NESO) Data Portal API is a CKAN v3 API providing programmatic access to NESO datasets including wind forecasts, demand predictions, balancing services, transmission constraints, and other UK energy system data. Rate limits: maximum 1 request per second for the CKAN API and 2 requests per minute for the Datastore API.",
+    "version": "3",
+    "contact": {
+      "name": "NESO Data Portal",
+      "url": "https://www.neso.energy/data-portal"
+    },
+    "termsOfService": "https://www.neso.energy/data-portal/api-guidance"
+  },
+  "servers": [
+    {
+      "url": "https://api.neso.energy/api/3/action",
+      "description": "NESO CKAN API production endpoint"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Discovery",
+      "description": "Discovery endpoints for organizations, datasets, and tags."
+    },
+    {
+      "name": "Search",
+      "description": "Search endpoints for datasets and resources."
+    },
+    {
+      "name": "Metadata",
+      "description": "Retrieve metadata for datasets and resources."
+    },
+    {
+      "name": "Datastore",
+      "description": "Query tabular data with filters or PostgreSQL-style SQL."
+    }
+  ],
+  "paths": {
+    "/organization_list": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "List data groups",
+        "description": "Returns a list of all data groups (CKAN organizations) on the NESO Data Portal.",
+        "operationId": "organizationList",
+        "responses": {
+          "200": {
+            "description": "List of organizations.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/package_list": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "List datasets",
+        "description": "Returns a list of all datasets (CKAN packages) on the NESO Data Portal.",
+        "operationId": "packageList",
+        "responses": {
+          "200": {
+            "description": "List of dataset identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag_list": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "List tags",
+        "description": "Returns a list of available tags on the NESO Data Portal.",
+        "operationId": "tagList",
+        "responses": {
+          "200": {
+            "description": "List of tags.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/package_search": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search datasets",
+        "description": "Searches datasets by query criteria.",
+        "operationId": "packageSearch",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search query string.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching datasets.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resource_search": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Search resources",
+        "description": "Searches data files (resources) by query criteria.",
+        "operationId": "resourceSearch",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search query string.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching resources.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/package_show": {
+      "get": {
+        "tags": ["Metadata"],
+        "summary": "Show dataset",
+        "description": "Returns the details of a single dataset.",
+        "operationId": "packageShow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Dataset identifier or slug.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset details.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resource_show": {
+      "get": {
+        "tags": ["Metadata"],
+        "summary": "Show resource",
+        "description": "Returns metadata for a single resource, including modification date for change-detection.",
+        "operationId": "resourceShow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Resource identifier (UUID).",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource metadata.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/datastore_search": {
+      "get": {
+        "tags": ["Datastore"],
+        "summary": "Query tabular data",
+        "description": "Queries the datastore for tabular records with optional filters and pagination.",
+        "operationId": "datastoreSearch",
+        "parameters": [
+          {
+            "name": "resource_id",
+            "in": "query",
+            "required": true,
+            "description": "Resource identifier whose datastore is being queried.",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of records to return.",
+            "schema": {"type": "integer", "default": 100}
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Offset into the result set.",
+            "schema": {"type": "integer", "default": 0}
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Free-text query against indexed fields.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datastore records.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/datastore_search_sql": {
+      "get": {
+        "tags": ["Datastore"],
+        "summary": "Query datastore via SQL",
+        "description": "Queries the datastore using PostgreSQL syntax. Field IDs and Resource IDs must be enclosed in double quotes.",
+        "operationId": "datastoreSearchSql",
+        "parameters": [
+          {
+            "name": "sql",
+            "in": "query",
+            "required": true,
+            "description": "PostgreSQL-syntax SQL query.",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SQL query results.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CkanResponse"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CkanResponse": {
+        "type": "object",
+        "description": "Standard CKAN API response envelope.",
+        "properties": {
+          "help": {
+            "type": "string",
+            "description": "URL to the help endpoint for the action."
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful."
+          },
+          "result": {
+            "description": "Action-specific payload."
+          }
+        }
+      }
+    }
+  }
+}
