@@ -9,21 +9,18 @@
     "neso-metadata-api-openapi.yml",
     "neso-search-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 4 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "neso-data-portal-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "superseded outputs removed: neso-data-portal-datastore-api-openapi.yml, neso-data-portal-discovery-api-openapi.yml, neso-data-portal-metadata-api-openapi.yml, neso-data-portal-search-api-openapi.yml",
-    "apis.yml register: written (+4 apis, 5 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
-    "neso-data-portal-datastore-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "neso-data-portal-discovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "neso-data-portal-metadata-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "neso-data-portal-search-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "neso-datastore-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "neso-discovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "neso-metadata-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "neso-search-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }
